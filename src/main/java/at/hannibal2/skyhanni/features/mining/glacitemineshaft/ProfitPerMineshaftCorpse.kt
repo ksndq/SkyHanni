@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.mining.glacitemineshaft
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.events.mining.CorpseLootedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -15,7 +16,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 
 @SkyHanniModule
 object ProfitPerMineshaftCorpse {
-    private val config get() = SkyHanniMod.feature.mining.mineshaft
+    private val config get() = SkyHanniMod.feature.mining.glaciteMineshaft
 
     @HandleEvent
     fun onCorpseLooted(event: CorpseLootedEvent) {
@@ -51,5 +52,10 @@ object ProfitPerMineshaftCorpse {
         hover.add("")
         hover.add("§e$totalMessage")
         ChatUtils.hoverableChat(totalMessage, hover)
+    }
+
+    @HandleEvent
+    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.move(75, "mining.mineshaft.profitPerCorpseLoot", "mining.glaciteMineshaft.profitPerCorpseLoot")
     }
 }

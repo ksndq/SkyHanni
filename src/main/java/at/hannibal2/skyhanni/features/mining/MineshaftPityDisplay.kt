@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.mining
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.HotmData
 import at.hannibal2.skyhanni.data.HotmReward
 import at.hannibal2.skyhanni.data.IslandType
@@ -34,7 +35,7 @@ import net.minecraft.item.ItemStack
 
 @SkyHanniModule
 object MineshaftPityDisplay {
-    private val config get() = SkyHanniMod.feature.mining.mineshaftPityDisplay
+    private val config get() = SkyHanniMod.feature.mining.glaciteMineshaft.mineshaftPityDisplay
 
     private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
 
@@ -343,5 +344,10 @@ object MineshaftPityDisplay {
 
             fun PityBlock.getPity() = (blocksBroken + spreadBlocksBroken / 2.0) * multiplier
         }
+    }
+
+    @HandleEvent
+    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.move(75, "mining.mineshaftPityDisplay", "mining.glaciteMineshaft.mineshaftPityDisplay")
     }
 }
