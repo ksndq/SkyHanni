@@ -10,13 +10,19 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 class MineshaftPortalConfig {
 
     @Expose
-    @ConfigOption(name = "Spawn Alert", desc = "Show an alert when you spawn a mineshaft entrance.")
+    @ConfigOption(name = "Notify Party", desc = "Send a message about spawning a mineshaft in party chat.")
     @ConfigEditorBoolean
     @FeatureToggle
-    var alert: Boolean = false
+    var notifyParty: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Draw Line", desc = "Draw a line starting at your crosshair to a spawned mineshaft entrance.")
+    @ConfigOption(name = "Waypoint", desc = "Mark spawned Mineshaft Portals within line of sight with a waypoint.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var waypoint: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Draw Line", desc = "Draw a line starting at your crosshair to a spawned Mineshaft Portal.")
     @ConfigEditorBoolean
     @FeatureToggle
     var drawLine: Boolean = false
@@ -24,10 +30,10 @@ class MineshaftPortalConfig {
     @Expose
     @ConfigOption(name = "Line Color", desc = "Color of the line.")
     @ConfigEditorColour
-    var lineColor: String = "0:100:135:195:58"
+    var lineColor: String = "0:185:232:234:90"
 
     @Expose
     @ConfigOption(name = "Line Width", desc = "Width of the line.")
     @ConfigEditorSlider(minStep = 1f, minValue = 1f, maxValue = 10f)
-    var lineWidth: Int = 1
+    var lineWidth: Int = 5
 }
