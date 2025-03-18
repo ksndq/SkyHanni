@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.mining.glacitemineshaft
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.data.PartyApi
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
@@ -11,6 +12,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
+import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -57,11 +59,18 @@ object MineshaftPortal {
     fun onChatMessage(event: SkyHanniChatEvent) {
         if (!spawnPattern.matches(event.message)) return
 
-        //TODO add party message
+        if (config.notifyParty) {
+            if(!PartyApi.partyMembers.isEmpty()) {
+                HypixelCommands.partyChat(config.notifyMessage)
+            }
+        }
+        //TODO corpse count and avarge for tracker
+        //TODO Pity display move config
 
-        if (!config.waypoint) return
-        lastSpawn = SimpleTimeMark.now()
-        findPortal()
+        if (config.waypoint) {
+            lastSpawn = SimpleTimeMark.now()
+            findPortal()
+        }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
@@ -74,7 +83,7 @@ object MineshaftPortal {
         portalEntity?.takeIf { it.canBeSeen() }?.let {
             if (!active) {
                 active = true
-                ChatUtils.chat("§aLocated the Mineshaft Portal!")
+                ChatUtils.chat("Located the Mineshaft Portal!")
             }
         }
     }

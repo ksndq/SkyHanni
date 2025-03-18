@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorColour
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class MineshaftPortalConfig {
@@ -14,6 +15,12 @@ class MineshaftPortalConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var notifyParty: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Party Message", desc = "Send a message about spawning a mineshaft in party chat.")
+    @ConfigEditorText
+    @FeatureToggle
+    var notifyMessage: String = "Spawned a Mineshaft!"
 
     @Expose
     @ConfigOption(name = "Waypoint", desc = "Mark spawned Mineshaft Portals within line of sight with a waypoint.")
