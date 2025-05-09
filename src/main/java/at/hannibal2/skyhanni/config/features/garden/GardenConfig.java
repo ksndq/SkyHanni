@@ -24,6 +24,11 @@ public class GardenConfig {
     public SkyMartConfig skyMart = new SkyMartConfig();
 
     @Expose
+    @ConfigOption(name = "Pesthunter's Wares", desc = "")
+    @Accordion
+    public PesthuntersWaresConfig pesthuntersWares = new PesthuntersWaresConfig();
+
+    @Expose
     @Category(name = "Visitor", desc = "Visitor Settings")
     public VisitorConfig visitors = new VisitorConfig();
 
