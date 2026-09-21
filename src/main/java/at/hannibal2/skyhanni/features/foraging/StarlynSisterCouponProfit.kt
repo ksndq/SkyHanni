@@ -39,7 +39,7 @@ object StarlynSisterCouponProfit {
     private val patternGroup = RepoPattern.group("foraging.starlyn-contest")
 
     /**
-     * Differentiates between purchasable items and upgrades.
+     * Only items in Starlyn Shops contain this line, allowing them to be distinguished from upgrades.
      *
      * REGEX-TEST: Click to trade!
      * REGEX-FAIL: Click to unlock!
