@@ -37,10 +37,10 @@ object StarlynSisterCouponProfit {
     private var currentDisplayMode = DisplayMode.PER_COUPON
     private var currentSisterType: StarlynSisterType? = null
 
-    private var cachedItemData: Set<ItemProfitData> = emptySet()
+    private var cachedItemData: List<ItemProfitData> = emptyList()
 
     private val IGNORED_COLUMNS = setOf(0, 8)
-    private val SLOT_RANGE = (13..44).toSet()
+    private val SLOT_RANGE = IntRange(9, 44)
 
     private val VALID_INVENTORY_SLOTS: Set<Int> = SLOT_RANGE.filterTo(mutableSetOf()) { it % 9 !in IGNORED_COLUMNS }
 
@@ -65,7 +65,7 @@ object StarlynSisterCouponProfit {
             updateDisplay()
         },
         onClose = {
-            cachedItemData = emptySet()
+            cachedItemData = emptyList()
             display = emptyList()
         },
     )
@@ -105,20 +105,22 @@ object StarlynSisterCouponProfit {
         )
     }
 
-    private fun buildItemData(event: InventoryFullyOpenedEvent, sister: StarlynSisterType): Set<ItemProfitData> =
-        event.inventoryItems.mapNotNullTo(mutableSetOf()) { (slot, item) ->
-            try {
-                readItem(slot, item, sister)
-            } catch (e: Throwable) {
-                ErrorManager.logErrorWithData(
-                    e, "Error while reading item '${item.repoItemName}'",
-                    "item" to item,
-                    "name" to item.repoItemName,
-                    "inventory name" to event.inventoryName,
-                )
-                null
+    private fun buildItemData(event: InventoryFullyOpenedEvent, sister: StarlynSisterType): List<ItemProfitData> =
+        event.inventoryItems
+            .filter { (slot, _) -> slot in VALID_INVENTORY_SLOTS }
+            .mapNotNull { (slot, item) ->
+                try {
+                    readItem(slot, item, sister)
+                } catch (e: Throwable) {
+                    ErrorManager.logErrorWithData(
+                        e, "Error while reading item '${item.repoItemName}'",
+                        "item" to item,
+                        "name" to item.repoItemName,
+                        "inventory name" to event.inventoryName,
+                    )
+                    null
+                }
             }
-        }
 
     private fun buildTableEntries(): List<DisplayTableEntry> = cachedItemData.mapNotNull { data ->
         if (currentDisplayMode == DisplayMode.PER_COUPON && data.isCouponPrizeItem) return@mapNotNull null
@@ -141,8 +143,6 @@ object StarlynSisterCouponProfit {
     }
 
     private fun readItem(slot: Int, item: SafeItemStack, sister: StarlynSisterType): ItemProfitData? {
-        if (slot !in VALID_INVENTORY_SLOTS) return null
-
         val nameStr = item.hoverName.formattedTextCompatLeadingWhiteLessResets()
         val internalName = item.getInternalNameOrNull() ?: NeuInternalName.fromItemNameOrNull(nameStr) ?: return null
 
