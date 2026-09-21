@@ -12,12 +12,14 @@ import at.hannibal2.skyhanni.utils.DisplayTableEntry
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceName
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceOrNull
+import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.LoreCostUtils
 import at.hannibal2.skyhanni.utils.LoreCostUtils.readLoreCosts
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
+import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
@@ -27,11 +29,27 @@ import at.hannibal2.skyhanni.utils.compat.mapToComponents
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.addRenderableButton
+import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 
 @SkyHanniModule
 object StarlynSisterCouponProfit {
 
     private val config get() = SkyHanniMod.feature.foraging.starlynContest
+
+    private val patternGroup = RepoPattern.group("foraging.starlyn-contest")
+
+    /**
+     * Differentiates between purchasable items and upgrades.
+     *
+     * REGEX-TEST: Click to trade!
+     * REGEX-FAIL: Click to unlock!
+     * REGEX-FAIL: UNLOCKED
+     * REGEX-FAIL: Requires Miria Level V.
+     */
+    private val tradeLinePattern by patternGroup.pattern(
+        "trade",
+        "Click to trade!",
+    )
 
     private var display = emptyList<Renderable>()
     private var currentDisplayMode = DisplayMode.PER_COUPON
@@ -143,11 +161,10 @@ object StarlynSisterCouponProfit {
     }
 
     private fun readItem(slot: Int, item: SafeItemStack, sister: StarlynSisterType): ItemProfitData? {
+        if (!tradeLinePattern.anyMatches(item.getCleanLore())) return null
+
         val nameStr = item.hoverName.formattedTextCompatLeadingWhiteLessResets()
         val internalName = item.getInternalNameOrNull() ?: NeuInternalName.fromItemNameOrNull(nameStr) ?: return null
-
-        // Avoids showing upgrades in the table
-        if (internalName.isKnownItem().not()) return null
 
         var totalCost = 0.0
         var couponAmount = 0L
